@@ -1,5 +1,7 @@
 # ElasticSearch sample with Spring boot 3.0.4
 
+Inspired by Csaba Marton https://github.com/csabamarton/spring-elasticsearch
+
 ## Building the project
 
 1. start the elasticseach database in docker. Please check out the docker-compose folder.
