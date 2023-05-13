@@ -1,0 +1,33 @@
+Pozitív:
+------------------------------------------------------------------------------------------------------------------------
+- RequestLoggingFiltert nem ismertem, tök jó!
+------------------------------------------------------------------------------------------------------------------------
+- Spring DefaultLifecycleProcessor-t nem ismertem
+------------------------------------------------------------------------------------------------------------------------
+
+Negatív:
+------------------------------------------------------------------------------------------------------------------------
+- Többször is létre lehet hozni a usert ugyanazokkal az adatokkal
+------------------------------------------------------------------------------------------------------------------------
+- A hibás input nem logolódik
+------------------------------------------------------------------------------------------------------------------------
+- A ControllerAdvice nem kezel le minden hibát és a visszatérési érték sem igazán jó. A hiba esetén a visszaadott struktúrának minimálisan kell tartalmaznia
+    - timestamp
+    - http status
+    - http status text
+    - request path
+    - a hiba részletesebb oka
+------------------------------------------------------------------------------------------------------------------------
+- A search végpontnál a validáció nem jó. Egy feltételt kellene csak implementálni: lastName és firstName nem lehet mindkettő üres, de egyik vagy másik elhagyható legyen
+------------------------------------------------------------------------------------------------------------------------
+- A like-os keresés nem működik tökéletesen. Pl. Felvettem usert "Nagy Péter" névvel. Erre az inputra nem ad vissza semmit:
+    {
+        "firstName": "Pete",
+        "lastName": "a"
+    }
+    Pedif azt vártam volna, hogy a minta illeszkedik.
+------------------------------------------------------------------------------------------------------------------------
+- A search-ben nem lehet megadni max találatszámot, és lapozásra nincs lehetőség
+------------------------------------------------------------------------------------------------------------------------
+- A postman collection-t is be lehetne tenni a projektbe
+------------------------------------------------------------------------------------------------------------------------
