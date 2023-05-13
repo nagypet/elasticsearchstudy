@@ -18,6 +18,7 @@ package hu.perit.elasticsearchstudy.exceptionhandler;
 
 import hu.perit.spvitamin.core.StackTracer;
 import hu.perit.spvitamin.core.exception.ExceptionWrapper;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 import hu.perit.spvitamin.spring.exceptionhandler.RestExceptionResponse;
 import hu.perit.spvitamin.spring.exceptionhandler.RestResponseEntityExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,12 @@ public class ApplicationSpecificRestExceptionHandler extends RestResponseEntityE
         {
             log.error(StackTracer.toString(ex));
             RestExceptionResponse exceptionResponse = new RestExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex, path);
+            return new ResponseEntity<>(exceptionResponse, HttpStatus.valueOf(exceptionResponse.getStatus()));
+        }
+        else if (exception.instanceOf(ResourceNotFoundException.class))
+        {
+            log.warn(ex.toString());
+            RestExceptionResponse exceptionResponse = new RestExceptionResponse(HttpStatus.NOT_FOUND, ex, path);
             return new ResponseEntity<>(exceptionResponse, HttpStatus.valueOf(exceptionResponse.getStatus()));
         }
         else

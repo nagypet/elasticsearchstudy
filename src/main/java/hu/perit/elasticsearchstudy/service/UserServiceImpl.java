@@ -16,9 +16,13 @@
 
 package hu.perit.elasticsearchstudy.service;
 
-import hu.perit.elasticsearchstudy.db.elasticsearch.document.UserEntity;
+import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
+import hu.perit.elasticsearchstudy.mapper.UserMapper;
 import hu.perit.elasticsearchstudy.model.CreateUserRequest;
 import hu.perit.elasticsearchstudy.model.SearchUserRequest;
+import hu.perit.elasticsearchstudy.model.UserDTO;
+import hu.perit.elasticsearchstudy.model.UserSearchResponse;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +37,10 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,6 +49,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService
 {
     private final ElasticsearchOperations elasticsearchOperations;
+    private final UserMapper userMapper;
 
     @Override
     public UserEntity createUser(CreateUserRequest request)
@@ -63,7 +70,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public List<UserEntity> searchUser(SearchUserRequest request)
+    public UserSearchResponse searchUser(SearchUserRequest request)
     {
         log.debug("searchUser({})", request);
 
@@ -80,7 +87,32 @@ public class UserServiceImpl implements UserService
             log.error(e.toString());
         }
 
-        return userEntities;
+        return createUserSearchResponse(userEntities);
+    }
+
+    private UserSearchResponse createUserSearchResponse(List<UserEntity> userEntities)
+    {
+        UserSearchResponse userSearchResponse = new UserSearchResponse();
+
+        userSearchResponse.setUsers(
+                userEntities.stream()
+                        .map(this.userMapper::map)
+                        .collect(Collectors.toList()));
+
+        userSearchResponse.setTotal(userEntities.size());
+
+        return userSearchResponse;
+    }
+
+    @Override
+    public UserDTO getUser(String id) throws ResourceNotFoundException
+    {
+        UserEntity userEntity = this.elasticsearchOperations.get(id, UserEntity.class, IndexCoordinates.of("user"));
+        if (userEntity == null)
+        {
+            throw new ResourceNotFoundException(MessageFormat.format("User not found by id ''{0}''", id));
+        }
+        return this.userMapper.map(userEntity);
     }
 
 

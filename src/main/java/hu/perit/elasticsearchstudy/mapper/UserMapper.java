@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.model;
+package hu.perit.elasticsearchstudy.mapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
+import hu.perit.elasticsearchstudy.model.UserDTO;
+import org.mapstruct.Mapper;
 
-@Data
-@AllArgsConstructor
-public class UserResponse {
-
-   private String uuid;
-   private String firstName;
-   private String lastName;
-   private String email;
+@Mapper(componentModel = "spring")
+public interface UserMapper
+{
+    UserDTO map(UserEntity entity);
 }

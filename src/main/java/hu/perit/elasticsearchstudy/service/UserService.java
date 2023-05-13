@@ -17,14 +17,17 @@
 package hu.perit.elasticsearchstudy.service;
 
 import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.db.elasticsearch.document.UserEntity;
+import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
 import hu.perit.elasticsearchstudy.model.SearchUserRequest;
-
-import java.util.List;
+import hu.perit.elasticsearchstudy.model.UserDTO;
+import hu.perit.elasticsearchstudy.model.UserSearchResponse;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 
 public interface UserService
 {
     UserEntity createUser(CreateUserRequest request);
 
-    List<UserEntity> searchUser(SearchUserRequest request);
+    UserSearchResponse searchUser(SearchUserRequest request);
+
+    UserDTO getUser(String id) throws ResourceNotFoundException;
 }

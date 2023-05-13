@@ -17,56 +17,44 @@
 package hu.perit.elasticsearchstudy.rest.controller;
 
 import hu.perit.elasticsearchstudy.config.Constants;
-import hu.perit.elasticsearchstudy.db.elasticsearch.document.UserEntity;
-import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.model.UserResponse;
-import hu.perit.elasticsearchstudy.model.SearchUserRequest;
-import hu.perit.elasticsearchstudy.model.UserSearchResponse;
+import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
+import hu.perit.elasticsearchstudy.model.*;
 import hu.perit.elasticsearchstudy.rest.api.UserApi;
 import hu.perit.elasticsearchstudy.service.UserService;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 import hu.perit.spvitamin.spring.restmethodlogger.LoggedRestMethod;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController implements UserApi
 {
-
     private final UserService userService;
 
     @LoggedRestMethod(eventId = Constants.USER_API_CREATE, subsystem = Constants.SUBSYSTEM_NAME)
-    public UserResponse createUser(@RequestBody @Valid CreateUserRequest userRequest)
+    public ResponseUri createUser(@RequestBody @Valid CreateUserRequest userRequest)
     {
-        UserEntity createdUserEntity = userService.createUser(userRequest);
+        UserEntity userEntity = userService.createUser(userRequest);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userEntity.getUuid()).toUri();
+        return new ResponseUri().location(location.toString());
+    }
 
-        return new UserResponse(createdUserEntity.getUuid(), createdUserEntity.getFirstName(), createdUserEntity.getLastName(), createdUserEntity.getEmail());
+    @Override
+    @LoggedRestMethod(eventId = Constants.USER_API_GET, subsystem = Constants.SUBSYSTEM_NAME)
+    public UserDTO getUser(String id) throws ResourceNotFoundException
+    {
+        return this.userService.getUser(id);
     }
 
     @LoggedRestMethod(eventId = Constants.USER_API_SEARCH, subsystem = Constants.SUBSYSTEM_NAME)
     public UserSearchResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest)
     {
-        List<UserEntity> userEntities = userService.searchUser(searchUserRequest);
-
-        return createUserSearchResponse(userEntities);
-    }
-
-    private UserSearchResponse createUserSearchResponse(List<UserEntity> userEntities)
-    {
-        UserSearchResponse userSearchResponse = new UserSearchResponse();
-
-        userSearchResponse.setUsers(
-                userEntities.stream()
-                        .map(userEntity -> new UserResponse(userEntity.getUuid(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getEmail()))
-                        .collect(Collectors.toList()));
-
-        userSearchResponse.setTotal(userEntities.size());
-
-        return userSearchResponse;
+        return userService.searchUser(searchUserRequest);
     }
 }

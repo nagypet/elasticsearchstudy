@@ -16,23 +16,23 @@
 
 package hu.perit.elasticsearchstudy.rest.api;
 
-import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.model.UserResponse;
-import hu.perit.elasticsearchstudy.model.SearchUserRequest;
-import hu.perit.elasticsearchstudy.model.UserSearchResponse;
+import hu.perit.elasticsearchstudy.model.*;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 public interface UserApi
 {
-    String BASE_URL = "/api/elasticsearch";
+    String BASE_URL = "/api/elasticsearch/user";
 
-    @PostMapping(BASE_URL + "/create")
+    @PostMapping(BASE_URL)
     @ResponseStatus(HttpStatus.CREATED)
-    UserResponse createUser(@RequestBody @Valid CreateUserRequest userRequest);
+    ResponseUri createUser(@RequestBody @Valid CreateUserRequest userRequest);
+
+    @GetMapping(BASE_URL + "/{id}")
+    UserDTO getUser(@Parameter(name = "User ID", required = true) @PathVariable("id") String id) throws ResourceNotFoundException;
 
     @PostMapping(path = {BASE_URL + "/search"})
     UserSearchResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest);
