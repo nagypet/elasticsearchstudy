@@ -16,12 +16,24 @@
 
 package hu.perit.elasticsearchstudy.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * @author Peter Nagy
+ */
 
 @Data
-public class SearchUserRequest
+@NoArgsConstructor
+public class ResponseUri
 {
-    private String firstName;
+    @Schema(example = "https://localhost:8400/users/12")
+    private String location;
 
-    private String lastName;
+    public ResponseUri location(String location)
+    {
+        this.location = location;
+        return this;
+    }
 }

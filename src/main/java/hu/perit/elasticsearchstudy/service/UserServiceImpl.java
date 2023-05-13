@@ -1,6 +1,22 @@
+/*
+ * Copyright 2020-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package hu.perit.elasticsearchstudy.service;
 
-import hu.perit.elasticsearchstudy.db.elasticsearch.document.User;
+import hu.perit.elasticsearchstudy.db.elasticsearch.document.UserEntity;
 import hu.perit.elasticsearchstudy.model.CreateUserRequest;
 import hu.perit.elasticsearchstudy.model.SearchUserRequest;
 import jakarta.validation.ValidationException;
@@ -29,17 +45,17 @@ public class UserServiceImpl implements UserService
     private final ElasticsearchOperations elasticsearchOperations;
 
     @Override
-    public User createUser(CreateUserRequest request)
+    public UserEntity createUser(CreateUserRequest request)
     {
         log.info("createUser({})", request);
 
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .build();
 
-        User result = this.elasticsearchOperations.save(user);
+        UserEntity result = this.elasticsearchOperations.save(userEntity);
 
         log.info("Creating user - End");
 
@@ -47,16 +63,16 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public List<User> searchUser(SearchUserRequest request)
+    public List<UserEntity> searchUser(SearchUserRequest request)
     {
         log.debug("searchUser({})", request);
 
-        final List<User> users = new ArrayList<>();
+        final List<UserEntity> userEntities = new ArrayList<>();
 
         try
         {
-            SearchHits<User> results = this.elasticsearchOperations.search(getCriteriaQuery(request), User.class, IndexCoordinates.of("user"));
-            users.addAll(results.stream().map(SearchHit::getContent).toList());
+            SearchHits<UserEntity> results = this.elasticsearchOperations.search(getCriteriaQuery(request), UserEntity.class, IndexCoordinates.of("user"));
+            userEntities.addAll(results.stream().map(SearchHit::getContent).toList());
         }
         catch (NoSuchIndexException e)
         {
@@ -64,7 +80,7 @@ public class UserServiceImpl implements UserService
             log.error(e.toString());
         }
 
-        return users;
+        return userEntities;
     }
 
 
