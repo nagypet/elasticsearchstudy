@@ -16,12 +16,55 @@
 
 package hu.perit.elasticsearchstudy.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
-@Data
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@ToString
 public class Filter
 {
-    private final Field field;
-    private final Operator operator;
-    private final String query;
+    private final String field;
+    private final Operation operation;
+    // If there are more items each must satisfy the operation. E.g. street like 'kert' AND street like 'sor'
+    private final List<String> queries = new ArrayList<>();
+
+    public Filter(String field, Operation operation, String query)
+    {
+        this.field = field;
+        this.operation = operation;
+        this.queries.add(query);
+    }
+
+    public Filter(String field, Operation operation, List<String> queries)
+    {
+        this.field = field;
+        this.operation = operation;
+        this.queries.addAll(queries);
+    }
+
+    public boolean isBlank()
+    {
+        return this.queries.isEmpty() || this.queries.stream().allMatch(StringUtils::isBlank);
+    }
+
+    public boolean isMultipleQuery()
+    {
+        return this.queries.size() > 1;
+    }
+
+    public String getSimpleQuery()
+    {
+        if (this.isBlank())
+        {
+            throw new IllegalStateException("List of query text is empty!");
+        }
+
+        return this.queries.get(0);
+    }
 }

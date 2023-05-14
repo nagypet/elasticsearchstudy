@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.service;
+package hu.perit.elasticsearchstudy.rest.api;
 
-import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
-import hu.perit.elasticsearchstudy.model.SearchUserRequest;
-import hu.perit.elasticsearchstudy.model.UserDTO;
-import hu.perit.elasticsearchstudy.model.SearchUserResponse;
+import hu.perit.elasticsearchstudy.model.*;
 import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
-public interface UserService
+public interface AddressApi
 {
-    UserEntity createUser(CreateUserRequest request);
+    String BASE_URL = "/api/elasticsearch/address";
 
-    SearchUserResponse searchUser(SearchUserRequest request);
+    @PostMapping(path = {BASE_URL + "/load"})
+    void loadFromFile() throws Exception;
 
-    UserDTO getUser(String id) throws ResourceNotFoundException;
+    @PostMapping(path = {BASE_URL + "/search"})
+    SearchAddressResponse searchAddress(@RequestBody String query);
 }

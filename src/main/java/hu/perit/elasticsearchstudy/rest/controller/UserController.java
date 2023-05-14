@@ -20,7 +20,7 @@ import hu.perit.elasticsearchstudy.config.Constants;
 import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
 import hu.perit.elasticsearchstudy.model.*;
 import hu.perit.elasticsearchstudy.rest.api.UserApi;
-import hu.perit.elasticsearchstudy.service.UserService;
+import hu.perit.elasticsearchstudy.service.api.UserService;
 import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 import hu.perit.spvitamin.spring.restmethodlogger.LoggedRestMethod;
 import jakarta.validation.Valid;

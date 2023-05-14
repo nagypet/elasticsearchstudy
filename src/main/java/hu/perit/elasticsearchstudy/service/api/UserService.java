@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.model;
+package hu.perit.elasticsearchstudy.service.api;
 
+import hu.perit.elasticsearchstudy.model.CreateUserRequest;
 import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
-import lombok.Getter;
+import hu.perit.elasticsearchstudy.model.SearchUserRequest;
+import hu.perit.elasticsearchstudy.model.UserDTO;
+import hu.perit.elasticsearchstudy.model.SearchUserResponse;
+import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 
-@Getter
-public enum Field
+public interface UserService
 {
-    LASTNAME(UserEntity.FIELD_LASTNAME),
-    FIRSTNAME(UserEntity.FIELD_FIRSTNAME),
-    EMAIL(UserEntity.FIELD_EMAIL);
+    UserEntity createUser(CreateUserRequest request);
 
-    private final String fieldName;
+    SearchUserResponse searchUser(SearchUserRequest request);
 
-    Field(String fieldName)
-    {
-        this.fieldName = fieldName;
-    }
+    UserDTO getUser(String id) throws ResourceNotFoundException;
 }

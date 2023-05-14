@@ -16,16 +16,22 @@
 
 package hu.perit.elasticsearchstudy.db.elasticsearch.table;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Data
-@Document(indexName = "user")
+@Getter
+@Setter
+@ToString
+@Document(indexName = UserEntity.INDEX_NAME)
 public class UserEntity
 {
+   public static final String INDEX_NAME = "user";
+
    public static final String FIELD_FIRSTNAME = "firstname";
    public static final String FIELD_LASTNAME = "lastname";
    public static final String FIELD_EMAIL = "email";

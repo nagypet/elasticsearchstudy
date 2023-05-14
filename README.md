@@ -2,7 +2,7 @@
 
 Inspired by Csaba Marton https://github.com/csabamarton/spring-elasticsearch
 
-## Building the project
+## User database
 
 1. start the elasticseach database in docker. Please check out the docker-compose folder.
 
@@ -16,3 +16,78 @@ CONTAINER ID   IMAGE                         COMMAND                  CREATED   
 - POST localhost:8700/api/elasticsearch/user
 - GET localhost:8700/api/elasticsearch/user
 - POST localhost:8700/api/elasticsearch/user/search
+
+## Address database
+There are around 10k addresses in the file addresses_budapest.csv. Loading:
+- POST http://localhost:8700/api/elasticsearch/address/load
+
+Searching:
+- POST http://localhost:8700/api/elasticsearch/address/search
+
+Searching for 'kert'
+```json
+{
+  "from": 0,
+  "post_filter": {
+    "bool": {}
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "fields": [
+              "search"
+            ],
+            "query": "*kert*"
+          }
+        }
+      ]
+    }
+  },
+  "size": 100,
+  "track_scores": false,
+  "version": true
+}
+```
+
+Searching for 'kert sor'
+```json
+{
+  "from": 0,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "bool": {
+            "must": [
+              {
+                "query_string": {
+                  "analyze_wildcard": true,
+                  "fields": [
+                    "search"
+                  ],
+                  "query": "*kert*"
+                }
+              },
+              {
+                "query_string": {
+                  "analyze_wildcard": true,
+                  "fields": [
+                    "search"
+                  ],
+                  "query": "*sor*"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "size": 100,
+  "track_scores": false,
+  "version": true
+}
+```

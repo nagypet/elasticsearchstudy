@@ -16,7 +16,7 @@
 
 package hu.perit.elasticsearchstudy.model;
 
-public enum Operator
+public enum Operation
 {
     EQUALS,
     LIKE

@@ -29,6 +29,8 @@ public class Constants
     public static final int USER_API_CREATE = 1;
     public static final int USER_API_SEARCH = 2;
     public static final int USER_API_GET = 3;
+    public static final int ADDRESS_API_SEARCH = 4;
+    public static final int ADDRESS_API_LOAD = 5;
 
     public static final String SUBSYSTEM_NAME = "elasticsearchstudy";
 }

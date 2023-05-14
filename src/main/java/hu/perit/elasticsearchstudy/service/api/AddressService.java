@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.model;
+package hu.perit.elasticsearchstudy.service.api;
 
-import lombok.Data;
+import hu.perit.elasticsearchstudy.model.SearchAddressResponse;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Data
-public class Filters
+public interface AddressService
 {
-    private final List<Filter> filters = new ArrayList<>();
+    void loadFromFile(String fileName, String city) throws Exception;
 
-    public void add(Filter filter)
-    {
-        this.filters.add(filter);
-    }
+    SearchAddressResponse searchTop100Address(String query);
 }

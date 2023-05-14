@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.model;
+package hu.perit.elasticsearchstudy.mapper;
 
-import lombok.Data;
+import hu.perit.elasticsearchstudy.db.elasticsearch.table.AddressEntity;
+import hu.perit.elasticsearchstudy.model.AddressDTO;
+import org.mapstruct.Mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Data
-public class Filters
+@Mapper(componentModel = "spring")
+public interface AddressMapper
 {
-    private final List<Filter> filters = new ArrayList<>();
-
-    public void add(Filter filter)
-    {
-        this.filters.add(filter);
-    }
+    AddressDTO mapDtoFromEntity(AddressEntity entity);
 }

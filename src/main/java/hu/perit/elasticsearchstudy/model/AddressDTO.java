@@ -18,16 +18,12 @@ package hu.perit.elasticsearchstudy.model;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
-public class Filters
+public class AddressDTO
 {
-    private final List<Filter> filters = new ArrayList<>();
-
-    public void add(Filter filter)
-    {
-        this.filters.add(filter);
-    }
+   private String uuid;
+   private String postCode;
+   private String city;
+   private String street;
+   private String district;
 }
