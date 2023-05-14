@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService
         log.debug("createUser({})", request);
 
         // Check if user exists
-        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.EQUALS);
+        List<Filter> filters = Filters.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.EQUALS);
         SearchUserResponse searchUserResponse = searchUser(filters);
         if (searchUserResponse.getTotal() != 0)
         {
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService
     {
         log.debug("searchUser({})", request);
 
-        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.LIKE);
+        List<Filter> filters = Filters.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.LIKE);
         return searchUser(filters);
     }
 

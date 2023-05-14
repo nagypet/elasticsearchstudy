@@ -17,10 +17,6 @@
 package hu.perit.elasticsearchstudy.model;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class Filter
@@ -28,26 +24,4 @@ public class Filter
     private final Field field;
     private final Operator operator;
     private final String query;
-
-    public static List<Filter> of(String firstName, String lastName, String email, Operator operator)
-    {
-        List<Filter> filters = new ArrayList<>();
-
-        if (StringUtils.isNotBlank(firstName))
-        {
-            filters.add(new Filter(Field.FIRSTNAME, operator, firstName));
-        }
-
-        if (StringUtils.isNotBlank(lastName))
-        {
-            filters.add(new Filter(Field.LASTNAME, operator, lastName));
-        }
-
-        if (StringUtils.isNotBlank(email))
-        {
-            filters.add(new Filter(Field.EMAIL, operator, email));
-        }
-
-        return filters;
-    }
 }
