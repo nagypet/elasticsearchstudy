@@ -56,8 +56,7 @@ public class UserServiceImpl implements UserService
         log.debug("createUser({})", request);
 
         // Check if user exists
-        List<Filter> filters = Filters.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.EQUALS);
-        SearchUserResponse searchUserResponse = searchUser(filters);
+        SearchUserResponse searchUserResponse = searchUser(Filters.byCreateRequest(request));
         if (searchUserResponse.getTotal() != 0)
         {
             throw new ResourceAlreadyExistsException("The exact same user already exists!");
@@ -74,8 +73,7 @@ public class UserServiceImpl implements UserService
     {
         log.debug("searchUser({})", request);
 
-        List<Filter> filters = Filters.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.LIKE);
-        return searchUser(filters);
+        return searchUser(Filters.bySearchRequest(request));
     }
 
 

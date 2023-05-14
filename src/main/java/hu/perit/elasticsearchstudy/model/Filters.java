@@ -26,6 +26,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Filters
 {
+    public static List<Filter> bySearchRequest(SearchUserRequest request)
+    {
+        return of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.LIKE);
+    }
+
+    public static List<Filter> byCreateRequest(CreateUserRequest request)
+    {
+        return of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.EQUALS);
+    }
+
     public static List<Filter> of(String firstName, String lastName, String email, Operator operator)
     {
         List<Filter> filters = new ArrayList<>();
