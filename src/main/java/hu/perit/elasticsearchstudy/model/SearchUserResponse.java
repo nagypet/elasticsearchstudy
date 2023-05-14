@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package hu.perit.elasticsearchstudy.mapper;
+package hu.perit.elasticsearchstudy.model;
 
-import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
-import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.model.UserDTO;
-import org.mapstruct.Mapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class SearchUserResponse
 {
-    UserDTO mapDtoFromEntity(UserEntity entity);
 
-    UserEntity mapEntityFromRequest(CreateUserRequest request);
+    private Integer total;
+    private List<UserDTO> users;
 }

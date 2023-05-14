@@ -16,17 +16,8 @@
 
 package hu.perit.elasticsearchstudy.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserSearchResponse {
-
-    private Integer total;
-    private List<UserDTO> users;
+public enum Operator
+{
+    EQUALS,
+    LIKE
 }

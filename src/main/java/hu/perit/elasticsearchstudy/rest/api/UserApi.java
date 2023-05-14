@@ -35,5 +35,5 @@ public interface UserApi
     UserDTO getUser(@Parameter(name = "User ID", required = true) @PathVariable("id") String id) throws ResourceNotFoundException;
 
     @PostMapping(path = {BASE_URL + "/search"})
-    UserSearchResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest);
+    SearchUserResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest);
 }

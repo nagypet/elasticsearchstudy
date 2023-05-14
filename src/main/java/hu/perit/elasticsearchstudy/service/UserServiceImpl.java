@@ -18,10 +18,8 @@ package hu.perit.elasticsearchstudy.service;
 
 import hu.perit.elasticsearchstudy.db.elasticsearch.table.UserEntity;
 import hu.perit.elasticsearchstudy.mapper.UserMapper;
-import hu.perit.elasticsearchstudy.model.CreateUserRequest;
-import hu.perit.elasticsearchstudy.model.SearchUserRequest;
-import hu.perit.elasticsearchstudy.model.UserDTO;
-import hu.perit.elasticsearchstudy.model.UserSearchResponse;
+import hu.perit.elasticsearchstudy.model.*;
+import hu.perit.spvitamin.spring.exception.ResourceAlreadyExistsException;
 import hu.perit.spvitamin.spring.exception.ResourceNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -48,37 +46,49 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService
 {
+    public static final String USER_INDEX_NAME = "user";
     private final ElasticsearchOperations elasticsearchOperations;
     private final UserMapper userMapper;
 
     @Override
     public UserEntity createUser(CreateUserRequest request)
     {
-        log.info("createUser({})", request);
+        log.debug("createUser({})", request);
 
-        UserEntity userEntity = UserEntity.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .build();
+        // Check if user exists
+        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.EQUALS);
+        SearchUserResponse searchUserResponse = searchUser(filters);
+        if (searchUserResponse.getTotal() != 0)
+        {
+            throw new ResourceAlreadyExistsException("The exact same user already exists!");
+        }
 
+        UserEntity userEntity = this.userMapper.mapEntityFromRequest(request);
         UserEntity result = this.elasticsearchOperations.save(userEntity);
-
-        log.info("Creating user - End");
 
         return result;
     }
 
     @Override
-    public UserSearchResponse searchUser(SearchUserRequest request)
+    public SearchUserResponse searchUser(SearchUserRequest request)
     {
         log.debug("searchUser({})", request);
+
+        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), null, Operator.LIKE);
+        return searchUser(filters);
+    }
+
+
+    private SearchUserResponse searchUser(List<Filter> filters)
+    {
+        log.debug("searchUser({})", filters);
 
         final List<UserEntity> userEntities = new ArrayList<>();
 
         try
         {
-            SearchHits<UserEntity> results = this.elasticsearchOperations.search(getCriteriaQuery(request), UserEntity.class, IndexCoordinates.of("user"));
+            CriteriaQuery criteriaQuery = getCriteriaQuery(filters);
+            SearchHits<UserEntity> results = this.elasticsearchOperations.search(criteriaQuery, UserEntity.class, IndexCoordinates.of(USER_INDEX_NAME));
             userEntities.addAll(results.stream().map(SearchHit::getContent).toList());
         }
         catch (NoSuchIndexException e)
@@ -90,51 +100,56 @@ public class UserServiceImpl implements UserService
         return createUserSearchResponse(userEntities);
     }
 
-    private UserSearchResponse createUserSearchResponse(List<UserEntity> userEntities)
+    private CriteriaQuery getCriteriaQuery(List<Filter> filters)
     {
-        UserSearchResponse userSearchResponse = new UserSearchResponse();
-
-        userSearchResponse.setUsers(
-                userEntities.stream()
-                        .map(this.userMapper::map)
-                        .collect(Collectors.toList()));
-
-        userSearchResponse.setTotal(userEntities.size());
-
-        return userSearchResponse;
-    }
-
-    @Override
-    public UserDTO getUser(String id) throws ResourceNotFoundException
-    {
-        UserEntity userEntity = this.elasticsearchOperations.get(id, UserEntity.class, IndexCoordinates.of("user"));
-        if (userEntity == null)
-        {
-            throw new ResourceNotFoundException(MessageFormat.format("User not found by id ''{0}''", id));
-        }
-        return this.userMapper.map(userEntity);
-    }
-
-
-    private CriteriaQuery getCriteriaQuery(SearchUserRequest request)
-    {
-        if (StringUtils.isAllBlank(request.getFirstName(), request.getLastName()))
+        boolean thereIsAtLeastOneNonNullQuery = filters.stream().anyMatch(i -> StringUtils.isNotBlank(i.getQuery()));
+        if (!thereIsAtLeastOneNonNullQuery)
         {
             throw new ValidationException();
         }
 
         Criteria criteria = new Criteria();
 
-        if (StringUtils.isNotBlank(request.getFirstName()))
+        for (Filter filter : filters)
         {
-            criteria = criteria.or("firstname").contains(request.getFirstName());
-        }
-
-        if (StringUtils.isNotBlank(request.getLastName()))
-        {
-            criteria = criteria.and("lastname").contains(request.getLastName());
+            if (StringUtils.isNotBlank(filter.getQuery()))
+            {
+                if (filter.getOperator() == Operator.EQUALS)
+                {
+                    criteria = criteria.and(filter.getField().getFieldName()).is(filter.getQuery());
+                }
+                else
+                {
+                    criteria = criteria.and(filter.getField().getFieldName()).contains(filter.getQuery());
+                }
+            }
         }
 
         return new CriteriaQuery(criteria).setPageable(Pageable.ofSize(1000));
+    }
+
+    private SearchUserResponse createUserSearchResponse(List<UserEntity> userEntities)
+    {
+        SearchUserResponse searchUserResponse = new SearchUserResponse();
+
+        searchUserResponse.setUsers(
+                userEntities.stream()
+                        .map(this.userMapper::mapDtoFromEntity)
+                        .collect(Collectors.toList()));
+
+        searchUserResponse.setTotal(userEntities.size());
+
+        return searchUserResponse;
+    }
+
+    @Override
+    public UserDTO getUser(String id) throws ResourceNotFoundException
+    {
+        UserEntity userEntity = this.elasticsearchOperations.get(id, UserEntity.class, IndexCoordinates.of(USER_INDEX_NAME));
+        if (userEntity == null)
+        {
+            throw new ResourceNotFoundException(MessageFormat.format("User not found by id ''{0}''", id));
+        }
+        return this.userMapper.mapDtoFromEntity(userEntity);
     }
 }

@@ -22,6 +22,6 @@ import lombok.Data;
 public class SearchUserRequest
 {
     private String firstName;
-
     private String lastName;
+    private String email;
 }

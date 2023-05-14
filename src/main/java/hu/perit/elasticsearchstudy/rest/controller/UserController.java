@@ -53,7 +53,7 @@ public class UserController implements UserApi
     }
 
     @LoggedRestMethod(eventId = Constants.USER_API_SEARCH, subsystem = Constants.SUBSYSTEM_NAME)
-    public UserSearchResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest)
+    public SearchUserResponse searchUsers(@RequestBody @Valid SearchUserRequest searchUserRequest)
     {
         return userService.searchUser(searchUserRequest);
     }
