@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService
     {
         log.debug("searchUser({})", request);
 
-        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), null, Operator.LIKE);
+        List<Filter> filters = Filter.of(request.getFirstName(), request.getLastName(), request.getEmail(), Operator.LIKE);
         return searchUser(filters);
     }
 
