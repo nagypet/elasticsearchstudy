@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "search",
+			"name": "searchUser",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -36,7 +36,7 @@
 			"response": []
 		},
 		{
-			"name": "create",
+			"name": "createUser",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -57,7 +57,47 @@
 			"response": []
 		},
 		{
-			"name": "get",
+			"name": "getUser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "searchAddress",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"P\",\r\n    \"lastName\": \"a\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8700/api/elasticsearch/user/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8700",
+					"path": [
+						"api",
+						"elasticsearch",
+						"user",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loadFromFile",
 			"request": {
 				"method": "GET",
 				"header": [],
