@@ -18,6 +18,57 @@ CONTAINER ID   IMAGE                         COMMAND                  CREATED   
 - POST localhost:8700/api/elasticsearch/user/search
 
 ## Address database
+
+The AddressEntity looks like:
+```java
+@Getter
+@Setter
+@ToString
+@Document(indexName = AddressEntity.INDEX_NAME)
+public class AddressEntity
+{
+    public static final String INDEX_NAME = "address";
+    public static final String FIELD_POSTCODE = "postcode";
+    public static final String FIELD_CITY = "city";
+    public static final String FIELD_STREET = "street";
+    public static final String FIELD_DISTRICT = "district";
+    public static final String FIELD_SEARCH = "search";
+
+    @Id
+    private String uuid;
+
+    @Field(type = FieldType.Text, name = FIELD_POSTCODE)
+    private String postCode;
+
+    @Field(type = FieldType.Text, name = FIELD_CITY)
+    private String city;
+
+    @Field(type = FieldType.Text, name = FIELD_STREET)
+    private String street;
+
+    @Field(type = FieldType.Text, name = FIELD_DISTRICT)
+    private String district;
+
+    @Field(type = FieldType.Text, name = FIELD_SEARCH)
+    private String searchField;
+
+    public void createSearchField()
+    {
+        this.searchField = textField(this.postCode) + textField(this.city) + textField(this.street) + textField(this.district);
+    }
+
+    private String textField(String text)
+    {
+        if (StringUtils.isBlank(text))
+        {
+            return "";
+        }
+        return text.replaceAll("\\s", "");
+    }
+}
+```
+An extra field has been introduced for searching, because I wanted that a partial match works in each field of the document. The search field contains the textual representation of each content field without any whitespace. In that case a search like `1038 kert` delivers the right match, where different fields of the document have to be search for with an allMatch condition.
+
 There are around 10k addresses in the file addresses_budapest.csv. Loading:
 - POST http://localhost:8700/api/elasticsearch/address/load
 
